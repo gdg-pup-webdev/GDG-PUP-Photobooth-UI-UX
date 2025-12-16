@@ -11,26 +11,26 @@ const googleSans = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "GDG Photobooth | Google Developer Groups on Campus PUP",
-  description: "Capture amazing photos at the GDG on Campus PUP event!",
+  title: "GDG Photobooth | Santa Doesn’t Know U Like I Do: A Design Jam",
+  description: "Capture amazing photos at the Santa Doesn’t Know U Like I Do: A Design Jam!",
   openGraph: {
-    title: "GDG Photobooth | Google Developer Groups on Campus PUP",
-    description: "Capture amazing photos at the GDG on Campus PUP event!",
+    title: "GDG Photobooth | Santa Doesn’t Know U Like I Do: A Design Jam",
+    description: "Capture amazing photos at the Santa Doesn’t Know U Like I Do: A Design Jam!",
     images: [
       {
-        url: "/sample/sample4.webp",
+        url: "/sample/sharing.webp",
         width: 1200,
         height: 630,
-        alt: "GDG on Campus PUP Photobooth",
+        alt: "GDG Photobooth | Santa Doesn’t Know U Like I Do: A Design Jam",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "GDG Photobooth | Google Developer Groups on Campus PUP",
-    description: "Capture amazing photos at the GDG on Campus PUP event!",
-    images: ["/sample/sample4.webp"],
+    title: "GDG Photobooth | Santa Doesn’t Know U Like I Do: A Design Jam",
+    description: "Capture amazing photos at the Santa Doesn’t Know U Like I Do: A Design Jam!",
+    images: ["/sample/sharing.webp"],
   },
 };
 

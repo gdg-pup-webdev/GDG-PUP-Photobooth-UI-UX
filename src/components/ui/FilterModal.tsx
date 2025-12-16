@@ -66,7 +66,7 @@ export default function FilterModal({
           boxShadow: `
             0 25px 50px -12px rgba(0, 0, 0, 0.8),
             0 0 0 1px rgba(255, 255, 255, 0.05),
-            0 0 80px ${colors.blue}20
+            0 0 80px ${colors.green}20
           `,
           animation: "slideUp 0.3s ease-out",
         }}
@@ -81,7 +81,7 @@ export default function FilterModal({
               <h2
                 className="text-2xl font-black bg-clip-text text-transparent"
                 style={{
-                  backgroundImage: `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+                  backgroundImage: `linear-gradient(135deg, ${colors.green}, ${colors.red})`,
                 }}
               >
                 Choose Filter
@@ -126,7 +126,7 @@ export default function FilterModal({
                   <div
                     className="aspect-square rounded-2xl overflow-hidden relative"
                     style={{
-                      background: "rgba(255, 255, 255, 0.03)",
+                      background: `linear-gradient(135deg, #ffffff, #f0f0f0)`,
                       border: isSelected
                         ? `3px solid ${filter.color}`
                         : "3px solid transparent",
@@ -208,9 +208,9 @@ export default function FilterModal({
             onClick={onClose}
             className="px-6 py-3 rounded-xl font-bold transition-all hover:scale-[1.02]"
             style={{
-              background: `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+              background: `linear-gradient(135deg, ${colors.green}, ${colors.red})`,
               color: "#fff",
-              boxShadow: `0 10px 25px ${colors.blue}40`,
+              boxShadow: `0 10px 25px ${colors.green}40`,
             }}
           >
             Done

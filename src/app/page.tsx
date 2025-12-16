@@ -6,9 +6,19 @@ import { useState, useEffect } from "react";
 import { motion, useInView, AnimatePresence, type Easing } from "framer-motion";
 import { useRef } from "react";
 import { Camera, Sparkles, Download, Share2, Clock, Users, Zap, Heart } from "lucide-react";
-import { FloatingShapes, GDGFooter, HeartBurst, colors, colorArray } from "@/components/ui";
+import { FloatingShapes, GDGFooter, HeartBurst } from "@/components/ui";
 
-// Animation variants
+// GDG Brand Colors (local to landing page - separate from Christmas theme)
+const colors = {
+  blue: "#4285F4",
+  red: "#EA4335",
+  yellow: "#FBBC04",
+  green: "#34A853",
+};
+
+const colorArray = Object.values(colors);
+
+
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },

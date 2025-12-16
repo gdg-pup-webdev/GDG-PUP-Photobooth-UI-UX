@@ -1,17 +1,20 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import {
   FloatingShapes,
   CountdownOverlay,
   ShotProgress,
   CaptureButton,
   FilterModal,
+  PreviewModal,
   GDGFooter,
   colors,
   colorArray,
   FILTERS,
 } from "./ui";
+
 
 type Shot = string | null;
 
@@ -29,6 +32,8 @@ export default function CameraBooth() {
 
   // Modal states
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [previewImageIndex, setPreviewImageIndex] = useState(0);
 
   // Email states
   const [email, setEmail] = useState<string>("");
@@ -176,6 +181,12 @@ export default function CameraBooth() {
     playVideo();
   };
 
+  // Preview modal functions
+  const openPreview = (index: number) => {
+    setPreviewImageIndex(index);
+    setShowPreviewModal(true);
+  };
+
   // Generate photostrip
   const loadImg = (src: string) =>
     new Promise<HTMLImageElement>((resolve) => {
@@ -268,9 +279,28 @@ export default function CameraBooth() {
     <div
       className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden"
       style={{
-        background: `linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%)`,
+        background: `linear-gradient(135deg, #0D1F12 0%, #1A2F1E 40%, #0D3B1F 70%, #1F1515 100%)`,
       }}
     >
+      {/* Christmas Corner Decorations */}
+      <img
+        src="/assets/spark.webp"
+        alt="Christmas Parol"
+        className="hidden 2xl:block absolute top-1/2 left-5 w-10 h-10 md:w-16 md:h-16 object-contain z-20 pointer-events-none"
+        style={{ transform: 'translate(-10%, -10%)' }}
+      />
+      <img
+        src="/assets/star.webp"
+        alt="Christmas Decoration"
+        className="hidden 2xl:block absolute top-0 right-0 w-28 h-28 md:w-36 md:h-36 object-contain z-20 pointer-events-none"
+        style={{ transform: 'translate(10%, -10%)' }}
+      />
+      <img
+        src="/assets/snowflake.webp"
+        alt="Christmas Element"
+        className="hidden 2xl:block absolute bottom-0 left-0 w-32 h-32 md:w-40 md:h-40 object-contain z-20 pointer-events-none"
+        style={{ transform: 'translate(-15%, 15%)' }}
+      />
       {/* CSS Animations */}
       <style jsx global>{`
         @keyframes float {
@@ -313,16 +343,32 @@ export default function CameraBooth() {
         @keyframes glow {
           0%,
           100% {
-            box-shadow: 0 0 20px ${colors.blue}40, 0 0 40px ${colors.blue}20;
+            box-shadow: 0 0 20px ${colors.green}40, 0 0 40px ${colors.green}20;
           }
           25% {
             box-shadow: 0 0 20px ${colors.red}40, 0 0 40px ${colors.red}20;
           }
           50% {
-            box-shadow: 0 0 20px ${colors.yellow}40, 0 0 40px ${colors.yellow}20;
+            box-shadow: 0 0 20px ${colors.gold}40, 0 0 40px ${colors.gold}20;
           }
           75% {
-            box-shadow: 0 0 20px ${colors.green}40, 0 0 40px ${colors.green}20;
+            box-shadow: 0 0 20px ${colors.white}40, 0 0 40px ${colors.white}20;
+          }
+        }
+        @keyframes snowfall {
+          0% {
+            transform: translateY(-10px) rotate(0deg);
+            opacity: 0;
+          }
+          10% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
           }
         }
         @keyframes countBounce {
@@ -350,76 +396,101 @@ export default function CameraBooth() {
         onSelectFilter={setCurrentFilter}
       />
 
+      {/* Preview Modal */}
+      <PreviewModal
+        isOpen={showPreviewModal}
+        onClose={() => setShowPreviewModal(false)}
+        images={shots}
+        initialIndex={previewImageIndex}
+        onRetake={retake}
+      />
+
       <div className="w-full max-w-7xl relative z-10">
         <div className="grid lg:grid-cols-[1fr,420px] gap-8">
           {/* Camera Body - Preview + Controls Side Panel */}
           <div className="flex gap-0">
-            {/* Camera Preview (Viewfinder) */}
-            <div
-              className="relative flex-1 aspect-[3/4] max-h-[85vh] rounded-l-3xl overflow-hidden"
-              style={{
-                background: "linear-gradient(145deg, #1a1a2e, #0f0f0f)",
-                boxShadow: `
-                  0 25px 50px -12px rgba(0, 0, 0, 0.5),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1)
-                `,
-                animation: "glow 8s ease-in-out infinite",
-              }}
-            >
-              {/* Decorative border gradient */}
+            {/* Camera Preview (Viewfinder) - Outer wrapper for decorations */}
+            <div className="relative flex-1 aspect-[3/4] max-h-[85vh]">
+              {/* Decorative Wreath - positioned outside the clipped area */}
+              <img
+                src="/assets/Wreath.webp"
+                alt="Christmas Wreath"
+                className="absolute -top-12 -left-12 w-32 h-32 md:w-40 md:h-40 object-contain z-30 pointer-events-none rotate-[-30deg]"
+              />
+              {/* <img
+                src="/assets/Sparky Christmas 2.webp"
+                alt="Sparky Christmas"
+                className="absolute -bottom-1 -left-16 w-32 h-32 md:w-40 md:h-40 object-contain z-30 pointer-events-none -scale-x-100"
+              /> */}
+
+              {/* Inner container that clips content */}
               <div
-                className="absolute inset-0 rounded-l-3xl pointer-events-none z-10"
+                className="relative w-full h-full rounded-l-3xl overflow-hidden"
                 style={{
-                  background: `linear-gradient(135deg, ${colors.blue}30, ${colors.red}30, ${colors.yellow}30, ${colors.green}30)`,
-                  padding: "2px",
-                  WebkitMask:
-                    "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                  WebkitMaskComposite: "xor",
-                  maskComposite: "exclude",
+                  background: "linear-gradient(145deg, #1a1a2e, #0f0f0f)",
+                  boxShadow: `
+                    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                  `,
+                  animation: "glow 8s ease-in-out infinite",
                 }}
-              />
+              >
+                {/* Video */}
+                <video
+                  ref={videoRef}
+                  className="w-full h-full object-cover"
+                  style={{
+                    filter: currentFilter,
+                    transform: "scaleX(-1)", // Mirror the video like a selfie camera
+                  }}
+                  muted
+                  playsInline
+                />
 
-              <video
-                ref={videoRef}
-                className="w-full h-full object-cover"
-                style={{
-                  filter: currentFilter,
-                  transform: "scaleX(-1)", // Mirror the video like a selfie camera
-                }}
-                muted
-                playsInline
-              />
+                {/* Decorative border gradient */}
+                <div
+                  className="absolute inset-0 rounded-l-3xl pointer-events-none z-10"
+                  style={{
+                    background: `linear-gradient(135deg, ${colors.green}30, ${colors.red}30, ${colors.gold}30, ${colors.white}30)`,
+                    padding: "2px",
+                    WebkitMask:
+                      "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                    WebkitMaskComposite: "xor",
+                    maskComposite: "exclude",
+                  }}
+                />
 
-              {countdown !== null && <CountdownOverlay countdown={countdown} />}
+                {countdown !== null && <CountdownOverlay countdown={countdown} />}
 
-              <ShotProgress shots={shots} currentIndex={currentShotIndex} />
+                <ShotProgress shots={shots} currentIndex={currentShotIndex} />
 
-              {showReview && allShotsTaken && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none backdrop-blur-sm z-5">
-                  <div
-                    className="flex items-center gap-3 px-6 py-3 rounded-full"
-                    style={{
-                      background: `linear-gradient(135deg, ${colors.green}, ${colors.blue})`,
-                      boxShadow: `0 10px 30px ${colors.green}50`,
-                    }}
-                  >
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
+                {showReview && allShotsTaken && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none backdrop-blur-sm z-5">
+                    <div
+                      className="flex items-center gap-3 px-6 py-3 rounded-full"
+                      style={{
+                        background: `linear-gradient(135deg, ${colors.green}, ${colors.red})`,
+                        boxShadow: `0 10px 30px ${colors.green}50`,
+                      }}
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span className="text-white font-bold text-lg">
-                      All shots captured!
-                    </span>
+                      <svg
+                        className="w-6 h-6 text-white"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span className="text-white font-bold text-lg">
+                        All shots captured!
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             {/* Camera Body Side Panel - Physical Buttons */}
@@ -526,7 +597,11 @@ export default function CameraBooth() {
               {/* Gallery/Shots Button */}
               <button
                 className="flex flex-col items-center gap-2 p-3 rounded-xl transition-all hover:scale-105 hover:bg-white/5 group"
-                onClick={() => allShotsTaken && setShowReview(true)}
+                onClick={() => {
+                  if (shots.filter(Boolean).length > 0) {
+                    openPreview(0);
+                  }
+                }}
               >
                 <div
                   className="w-14 h-14 rounded-xl flex items-center justify-center relative overflow-hidden transition-all group-hover:scale-110"
@@ -586,7 +661,7 @@ export default function CameraBooth() {
               >
                 <div className="flex gap-1.5 justify-center">
                   {shots.map((shot, i) => {
-                    const dotColor = [colors.blue, colors.red, colors.yellow][
+                    const dotColor = [colors.green, colors.red, colors.gold][
                       i
                     ];
                     return (
@@ -610,11 +685,11 @@ export default function CameraBooth() {
 
           {/* Sidebar - Info & Actions */}
           <div className="space-y-6">
-            {/* Header with GDG branding */}
+            {/* Header with Christmas branding */}
             <div className="relative">
               <div className="flex items-center gap-3 mb-2">
                 <div className="flex gap-1">
-                  {colorArray.map((color, i) => (
+                  {colorArray.slice(0, 4).map((color, i) => (
                     <div
                       key={i}
                       className="w-3 h-3 rounded-full"
@@ -629,19 +704,24 @@ export default function CameraBooth() {
                   ))}
                 </div>
                 <span className="text-zinc-400 text-sm font-medium tracking-wider uppercase">
-                  GDG Photobooth
+                  PHOTOBOOTH 
                 </span>
               </div>
               <h1
-                className="text-5xl font-black bg-clip-text text-transparent"
+                className="text-3xl md:text-4xl font-black bg-clip-text text-transparent leading-tight"
                 style={{
-                  backgroundImage: `linear-gradient(135deg, ${colors.blue}, ${colors.red}, ${colors.yellow}, ${colors.green})`,
+                  backgroundImage: `linear-gradient(135deg, ${colors.red}, ${colors.green}, ${colors.gold}, ${colors.white})`,
                   backgroundSize: "300% 300%",
                   animation: "gradientShift 5s ease infinite",
                 }}
               >
-                PHOTO BOOTH
+                Santa Doesn't Know U Like I Do
               </h1>
+              <img 
+                src="/assets/uiux-in-action.webp" 
+                alt="UI/UX In Action" 
+                className="h-8 md:h-30 w-auto object-contain"
+              />
               <p className="text-zinc-400 mt-2 flex items-center gap-2">
                 <span
                   className="inline-block w-2 h-2 rounded-full animate-pulse"
@@ -686,8 +766,8 @@ export default function CameraBooth() {
                 <div
                   className="px-4 py-2 rounded-lg text-sm font-bold transition-all hover:scale-105"
                   style={{
-                    background: `linear-gradient(135deg, ${colors.blue}30, ${colors.green}30)`,
-                    color: colors.blue,
+                    background: `linear-gradient(135deg, ${colors.red}30, ${colors.green}30)`,
+                    color: colors.red,
                   }}
                 >
                   Change
@@ -702,7 +782,7 @@ export default function CameraBooth() {
                   <h2
                     className="text-4xl font-black bg-clip-text text-transparent mb-2"
                     style={{
-                      backgroundImage: `linear-gradient(135deg, ${colors.yellow}, ${colors.red})`,
+                      backgroundImage: `linear-gradient(135deg, ${colors.gold}, ${colors.red})`,
                     }}
                   >
                     Review
@@ -712,7 +792,7 @@ export default function CameraBooth() {
 
                 <div className="space-y-4">
                   {shots.map((s, i) => {
-                    const shotColor = [colors.blue, colors.red, colors.yellow][
+                    const shotColor = [colors.green, colors.red, colors.gold][
                       i
                     ];
                     return (
@@ -725,18 +805,27 @@ export default function CameraBooth() {
                         }}
                       >
                         <div
-                          className="relative w-20 h-28 rounded-lg overflow-hidden shadow-lg flex-shrink-0"
+                          className="relative w-28 h-20 rounded-lg overflow-hidden shadow-lg flex-shrink-0 cursor-pointer group"
                           style={{
                             border: `2px solid ${shotColor}`,
                             boxShadow: `0 8px 20px ${shotColor}30`,
                           }}
+                          onClick={() => s && openPreview(i)}
                         >
                           {s && (
-                            <img
-                              src={s}
-                              className="w-full h-full object-cover"
-                              alt={`Shot ${i + 1}`}
-                            />
+                            <>
+                              <img
+                                src={s}
+                                className="w-full h-full object-cover transition-transform group-hover:-scale-x-105 -scale-x-100"
+                                alt={`Shot ${i + 1}`}
+                              />
+                              {/* Preview overlay on hover */}
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                </svg>
+                              </div>
+                            </>
                           )}
                         </div>
                         <div className="flex-1">
@@ -746,25 +835,38 @@ export default function CameraBooth() {
                           >
                             Shot {i + 1}
                           </div>
-                          <button
-                            onClick={() => retake(i)}
-                            className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-1 group"
-                          >
-                            <svg
-                              className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              onClick={() => s && openPreview(i)}
+                              className="text-sm text-zinc-500 hover:text-white transition-colors flex items-center gap-1"
                             >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                              />
-                            </svg>
-                            Retake this shot
-                          </button>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              Preview
+                            </button>
+                            <span className="text-zinc-600">•</span>
+                            <button
+                              onClick={() => retake(i)}
+                              className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-1 group"
+                            >
+                              <svg
+                                className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                />
+                              </svg>
+                              Retake
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -777,7 +879,7 @@ export default function CameraBooth() {
                     onClick={downloadStrip}
                     className="w-full py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98]"
                     style={{
-                      background: `linear-gradient(135deg, ${colors.green}, ${colors.blue})`,
+                      background: `linear-gradient(135deg, ${colors.green}, ${colors.red})`,
                       boxShadow: `0 15px 35px ${colors.green}40`,
                       color: "#fff",
                     }}
@@ -797,6 +899,7 @@ export default function CameraBooth() {
                     </svg>
                     Download Photo Strip
                   </button>
+
 
                   {!sent ? (
                     <div className="space-y-3">
@@ -821,7 +924,7 @@ export default function CameraBooth() {
                           className="absolute bottom-0 left-0 right-0 h-0.5"
                           style={{
                             background: email
-                              ? `linear-gradient(90deg, ${colors.blue}, ${colors.green})`
+                              ? `linear-gradient(90deg, ${colors.red}, ${colors.green})`
                               : "transparent",
                           }}
                         />
@@ -877,11 +980,11 @@ export default function CameraBooth() {
                           background:
                             !email || sending
                               ? "#444"
-                              : `linear-gradient(135deg, ${colors.blue}, ${colors.red})`,
+                              : `linear-gradient(135deg, ${colors.gold}, ${colors.red})`,
                           boxShadow:
                             !email || sending
                               ? "none"
-                              : `0 15px 35px ${colors.blue}40`,
+                              : `0 15px 35px ${colors.gold}40`,
                           color: "#fff",
                         }}
                       >
@@ -1023,7 +1126,7 @@ export default function CameraBooth() {
                   <li className="flex items-start gap-3">
                     <span
                       className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
-                      style={{ background: colors.blue, color: "#fff" }}
+                      style={{ background: colors.green, color: "#fff" }}
                     >
                       1
                     </span>
@@ -1041,7 +1144,7 @@ export default function CameraBooth() {
                   <li className="flex items-start gap-3">
                     <span
                       className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
-                      style={{ background: colors.yellow, color: "#fff" }}
+                      style={{ background: colors.gold, color: "#fff" }}
                     >
                       3
                     </span>

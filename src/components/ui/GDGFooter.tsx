@@ -4,7 +4,7 @@ import { colorArray } from "./GDGColors";
 
 export default function GDGFooter() {
   return (
-    <div className="pt-6 border-t border-zinc-800">
+    <div className="pt-6 border-t border-zinc-300">
       <div className="flex lg:flex-row flex-col items-center justify-center gap-2 text-zinc-500 text-sm">
         <span>Powered by</span>
         <div className="flex gap-1">

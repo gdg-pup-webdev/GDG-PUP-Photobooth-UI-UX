@@ -8,8 +8,8 @@ interface CountdownOverlayProps {
 }
 
 export default function CountdownOverlay({ countdown }: CountdownOverlayProps) {
-  const colorSequence = [colors.red, colors.yellow, colors.green];
-  const currentColor = colorSequence[3 - countdown] || colors.blue;
+  const colorSequence = [colors.red, colors.gold, colors.green];
+  const currentColor = colorSequence[3 - countdown] || colors.green;
 
   return (
     <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">

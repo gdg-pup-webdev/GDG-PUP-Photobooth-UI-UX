@@ -11,7 +11,7 @@ interface ShotProgressProps {
 }
 
 export default function ShotProgress({ shots, currentIndex }: ShotProgressProps) {
-  const shotColors = [colors.blue, colors.red, colors.yellow];
+  const shotColors = [colors.green, colors.red, colors.gold];
 
   return (
     <div className="absolute top-6 left-6 right-6 z-10">
