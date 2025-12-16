@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     description: "Capture amazing photos at the Santa Doesn’t Know U Like I Do: A Design Jam!",
     images: [
       {
-        url: "/sample/sharing.webp",
+        url: "/sharing.webp",
         width: 1200,
         height: 630,
         alt: "GDG Photobooth | Santa Doesn’t Know U Like I Do: A Design Jam",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "GDG Photobooth | Santa Doesn’t Know U Like I Do: A Design Jam",
     description: "Capture amazing photos at the Santa Doesn’t Know U Like I Do: A Design Jam!",
-    images: ["/sample/sharing.webp"],
+    images: ["/sharing.webp"],
   },
 };
 
