@@ -505,19 +505,6 @@ export default function CameraBooth() {
                 `,
               }}
             >
-              {/* Camera Grip Texture */}
-              <div className="absolute inset-y-0 right-0 w-6 opacity-20 pointer-events-none">
-                {[...Array(20)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-[5%] w-full"
-                    style={{
-                      background:
-                        i % 2 === 0 ? "rgba(255,255,255,0.1)" : "transparent",
-                    }}
-                  />
-                ))}
-              </div>
 
               {/* Filter Button */}
               <button
