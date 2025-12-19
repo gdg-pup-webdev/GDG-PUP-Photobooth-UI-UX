@@ -6,8 +6,8 @@ import { getEmailTemplate } from "./emailTemplate";
 //   "daguinotaserwin5@gmail.com",
 //   "salesrhandie@gmail.com",
 // ];
-// const emailCc = ["gdgpup.technologydepartment@gmail.com", "gdgpupwebdev@gmail.com"];
-const emailCc = ["gdgpupwebdev@gmail.com"];
+const emailCc = ["gdgpup.technologydepartment@gmail.com", "gdgpupwebdev@gmail.com"];
+// const emailCc = ["gdgpupwebdev@gmail.com"];
 
 export async function POST(req: Request) {
   try {
