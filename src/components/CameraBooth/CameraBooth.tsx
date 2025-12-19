@@ -8,6 +8,7 @@ import {
   PreviewModal,
   GDGFooter,
 } from "../ui";
+import Script from "next/script";
 import { CAMERA_ANIMATIONS } from "./constants";
 import { useCamera, useCapture, useEmail, useFaceMesh } from "./hooks";
 import {
@@ -31,7 +32,7 @@ export default function CameraBooth(_props: CameraBoothProps) {
   // State for filter selection
   const [currentFilter, setCurrentFilter] = useState<string>("");
   const [currentSticker, setCurrentSticker] = useState<string>("none");
-  
+
   // Modal states
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [showStickerModal, setShowStickerModal] = useState(false);
@@ -40,11 +41,11 @@ export default function CameraBooth(_props: CameraBoothProps) {
 
   // Custom hooks
   const { videoRef, playVideo } = useCamera();
-  
+
   // Face Mesh Hook (for Stickers)
   // We initialize it here so it runs alongside the camera
   const { canvasRef: faceMeshCanvasRef } = useFaceMesh(videoRef, currentSticker);
-  
+
   const {
     shots,
     countdown,
@@ -117,7 +118,7 @@ export default function CameraBooth(_props: CameraBoothProps) {
         currentFilter={currentFilter}
         onSelectFilter={setCurrentFilter}
       />
-      
+
       {/* Sticker Modal */}
       <StickerModal
         isOpen={showStickerModal}
@@ -200,6 +201,24 @@ export default function CameraBooth(_props: CameraBoothProps) {
         {/* Hidden canvas for snapshots */}
         <canvas ref={snapCanvasRef} className="hidden" />
       </div>
+
+      {/* Load MediaPipe FaceMesh Scripts reliably */}
+      <Script
+        src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"
+        strategy="lazyOnload"
+        onLoad={() => {
+          console.log("MediaPipe FaceMesh Script Loaded");
+        }}
+      />
+
+      {/* Load MediaPipe Hands Scripts for Sparky interaction */}
+      <Script
+        src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"
+        strategy="lazyOnload"
+        onLoad={() => {
+          console.log("MediaPipe Hands Script Loaded");
+        }}
+      />
     </div>
   );
 }
