@@ -129,7 +129,7 @@ export default function PreviewModal({
                     key={currentIndex}
                     src={validImages[currentIndex]}
                     alt={`Shot ${currentIndex + 1}`}
-                    className="w-full h-auto max-h-[70vh] object-contain -scale-x-100"
+                    className="w-full h-auto max-h-[70vh] object-contain"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}

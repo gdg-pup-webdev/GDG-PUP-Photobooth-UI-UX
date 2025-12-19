@@ -1,22 +1,23 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { colors, FILTERS, Filter } from "./GDGColors";
+import { colors } from "./GDGColors";
+import { STICKER_FILTERS, Filter } from "../CameraBooth/utils/faceFilters";
 import { X, Check } from "lucide-react";
 
-interface FilterModalProps {
+interface StickerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  currentFilter: string;
-  onSelectFilter: (filter: string) => void;
+  currentSticker: string;
+  onSelectSticker: (stickerId: string) => void;
 }
 
-export default function FilterModal({
+export default function StickerModal({
   isOpen,
   onClose,
-  currentFilter,
-  onSelectFilter,
-}: FilterModalProps) {
+  currentSticker,
+  onSelectSticker,
+}: StickerModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,21 +60,21 @@ export default function FilterModal({
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative w-full max-w-2xl rounded-3xl overflow-hidden"
+        className="relative w-full max-w-lg rounded-3xl overflow-hidden"
         style={{
           background: "linear-gradient(145deg, #1a1a2e, #0f0f0f)",
           border: "1px solid rgba(255, 255, 255, 0.1)",
           boxShadow: `
             0 25px 50px -12px rgba(0, 0, 0, 0.8),
             0 0 0 1px rgba(255, 255, 255, 0.05),
-            0 0 80px ${colors.green}20
+            0 0 80px ${colors.gold}20
           `,
           animation: "slideUp 0.3s ease-out",
         }}
       >
         {/* Header */}
         <div
-          className="p-6 border-b"
+          className="p-4 border-b"
           style={{ borderColor: "rgba(255, 255, 255, 0.08)" }}
         >
           <div className="flex items-center justify-between">
@@ -81,13 +82,13 @@ export default function FilterModal({
               <h2
                 className="text-2xl font-black bg-clip-text text-transparent"
                 style={{
-                  backgroundImage: `linear-gradient(135deg, ${colors.green}, ${colors.red})`,
+                  backgroundImage: `linear-gradient(135deg, ${colors.gold}, ${colors.green})`,
                 }}
               >
-                Choose Filter
+                Choose Sticker
               </h2>
               <p className="text-zinc-400 text-sm mt-1">
-                Preview filters on Sparky the Android
+                Add an AR sticker via Face Mesh
               </p>
             </div>
             <button
@@ -103,17 +104,17 @@ export default function FilterModal({
           </div>
         </div>
 
-        {/* Filter Grid */}
-        <div className="p-6 max-h-[400px] overflow-y-auto">
-          <div className="grid grid-cols-3 gap-4">
-            {FILTERS.map((filter: Filter, index: number) => {
-              const isSelected = currentFilter === filter.value;
+        {/* Sticker Grid */}
+        <div className="p-4 max-h-[400px] overflow-y-auto">
+          <div className="grid grid-cols-3 gap-3">
+            {STICKER_FILTERS.map((filter: Filter, index: number) => {
+              const isSelected = currentSticker === filter.id;
               
               return (
                 <button
-                  key={filter.name}
+                  key={filter.id}
                   onClick={() => {
-                    onSelectFilter(filter.value);
+                    onSelectSticker(filter.id);
                     onClose();
                   }}
                   className="relative group rounded-2xl overflow-hidden transition-all duration-300"
@@ -122,41 +123,34 @@ export default function FilterModal({
                     transform: isSelected ? "scale(1.02)" : "scale(1)",
                   }}
                 >
-                  {/* Preview with Sparky image */}
+                  {/* Preview with Emoji Only */}
                   <div
-                    className="aspect-square rounded-2xl overflow-hidden relative"
+                    className="aspect-square rounded-2xl overflow-hidden relative flex items-center justify-center bg-white/5"
                     style={{
-                      background: `linear-gradient(135deg, #ffffff, #f0f0f0)`,
                       border: isSelected
-                        ? `3px solid ${filter.color}`
+                        ? `3px solid ${colors.gold}`
                         : "3px solid transparent",
                       boxShadow: isSelected
-                        ? `0 0 20px ${filter.color}50`
+                        ? `0 0 20px ${colors.gold}50`
                         : "none",
                     }}
                   >
-                    {/* Sparky image with filter applied */}
-                    <img
-                      src="/sparky.webp"
-                      alt={`${filter.name} filter preview`}
-                      className="w-full h-full object-cover"
-                      style={{ 
-                        filter: filter.value || "none",
-                        transition: "filter 0.3s ease",
-                      }}
-                    />
+                    {/* Emoji - Represents the sticker */}
+                    <div className="relative text-5xl drop-shadow-lg transform transition-transform group-hover:scale-110">
+                      {filter.emoji}
+                    </div>
 
                     {/* Hover overlay */}
                     <div
                       className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                       style={{
-                        background: `linear-gradient(135deg, ${filter.color}40, ${filter.color}20)`,
+                        background: `linear-gradient(135deg, ${colors.gold}40, ${colors.gold}20)`,
                       }}
                     >
                       {isSelected && (
                         <div
                           className="w-10 h-10 rounded-full flex items-center justify-center"
-                          style={{ background: filter.color }}
+                          style={{ background: colors.gold }}
                         >
                           <Check className="w-6 h-6 text-white" />
                         </div>
@@ -166,8 +160,8 @@ export default function FilterModal({
                     {/* Selected indicator */}
                     {isSelected && (
                       <div
-                        className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
-                        style={{ background: filter.color }}
+                        className="absolute z-[100] top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ background: colors.gold }}
                       >
                         <Check className="w-4 h-4 text-white" />
                       </div>
@@ -179,7 +173,7 @@ export default function FilterModal({
                     <span
                       className="font-bold text-sm transition-colors"
                       style={{
-                        color: isSelected ? filter.color : "#888",
+                        color: isSelected ? colors.gold : "#888",
                       }}
                     >
                       {filter.name}
@@ -193,24 +187,19 @@ export default function FilterModal({
 
         {/* Footer */}
         <div
-          className="p-6 border-t flex justify-between items-center"
+          className="p-4 border-t flex justify-between items-center"
           style={{ borderColor: "rgba(255, 255, 255, 0.08)" }}
         >
           <div className="flex items-center gap-2 text-zinc-500 text-sm">
-            <img 
-              src="/sparky.webp" 
-              alt="Sparky" 
-              className="w-6 h-6 object-contain"
-            />
-            <span>Previewing with Sparky</span>
+            <span>Powered by MediaPipe</span>
           </div>
           <button
             onClick={onClose}
             className="px-6 py-3 rounded-xl font-bold transition-all hover:scale-[1.02]"
             style={{
-              background: `linear-gradient(135deg, ${colors.green}, ${colors.red})`,
+              background: `linear-gradient(135deg, ${colors.gold}, ${colors.green})`,
               color: "#fff",
-              boxShadow: `0 10px 25px ${colors.green}40`,
+              boxShadow: `0 10px 25px ${colors.gold}40`,
             }}
           >
             Done

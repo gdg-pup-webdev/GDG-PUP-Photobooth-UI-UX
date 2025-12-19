@@ -72,7 +72,7 @@ export default function ReviewSection({
                   <>
                     <img
                       src={s}
-                      className="w-full h-full object-cover transition-transform group-hover:-scale-x-105 -scale-x-100"
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       alt={`Shot ${i + 1}`}
                     />
                     {/* Preview overlay on hover */}

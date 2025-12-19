@@ -7,6 +7,7 @@ interface UseCaptureProps {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   currentFilter: string;
   playVideo: () => void;
+  stickerCanvasRef?: React.RefObject<HTMLCanvasElement | null>;
 }
 
 interface UseCaptureResult {
@@ -31,6 +32,7 @@ export function useCapture({
   videoRef,
   currentFilter,
   playVideo,
+  stickerCanvasRef,
 }: UseCaptureProps): UseCaptureResult {
   const snapCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const countdownInterval = useRef<NodeJS.Timeout | null>(null);
@@ -51,11 +53,21 @@ export function useCapture({
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
     
-    ctx.filter = currentFilter || "";
+    // Flip horizontal to create mirror effect (matches preview)
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+
+    // Draw Video with filter
+    ctx.filter = currentFilter || "none";
     ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
     
+    // Draw Sticker Layer if available (inherits filter)
+    if (stickerCanvasRef?.current) {
+      ctx.drawImage(stickerCanvasRef.current, 0, 0, canvas.width, canvas.height);
+    }
+    
     return canvas.toDataURL("image/png");
-  }, [currentFilter, videoRef]);
+  }, [currentFilter, videoRef, stickerCanvasRef]);
 
   const snap = useCallback((index: number) => {
     if (countdown !== null) return;

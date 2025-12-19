@@ -2,6 +2,7 @@ import { CountdownOverlay, ShotProgress, colors } from "../../ui";
 
 interface CameraPreviewProps {
   videoRef: React.RefObject<HTMLVideoElement | null>;
+  faceMeshCanvasRef: React.RefObject<HTMLCanvasElement | null>;
   currentFilter: string;
   countdown: number | null;
   shots: (string | null)[];
@@ -16,6 +17,7 @@ interface CameraPreviewProps {
  */
 export default function CameraPreview({
   videoRef,
+  faceMeshCanvasRef,
   currentFilter,
   countdown,
   shots,
@@ -54,6 +56,16 @@ export default function CameraPreview({
           }}
           muted
           playsInline
+        />
+
+        {/* Sticker Canvas (Face Mesh) - Apply filter to match photo output */}
+        <canvas
+          ref={faceMeshCanvasRef}
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          style={{ 
+            transform: "scaleX(-1)",
+            filter: currentFilter 
+          }}
         />
 
         {/* Decorative border gradient */}

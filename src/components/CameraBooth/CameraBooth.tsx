@@ -4,11 +4,12 @@ import { useState } from "react";
 import {
   FloatingShapes,
   FilterModal,
+  StickerModal,
   PreviewModal,
   GDGFooter,
 } from "../ui";
 import { CAMERA_ANIMATIONS } from "./constants";
-import { useCamera, useCapture, useEmail } from "./hooks";
+import { useCamera, useCapture, useEmail, useFaceMesh } from "./hooks";
 import {
   Decorations,
   CameraPreview,
@@ -29,14 +30,20 @@ interface CameraBoothProps {
 export default function CameraBooth(_props: CameraBoothProps) {
   // State for filter selection
   const [currentFilter, setCurrentFilter] = useState<string>("");
+  const [currentSticker, setCurrentSticker] = useState<string>("none");
   
   // Modal states
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showStickerModal, setShowStickerModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewImageIndex, setPreviewImageIndex] = useState(0);
 
   // Custom hooks
   const { videoRef, playVideo } = useCamera();
+  
+  // Face Mesh Hook (for Stickers)
+  // We initialize it here so it runs alongside the camera
+  const { canvasRef: faceMeshCanvasRef } = useFaceMesh(videoRef, currentSticker);
   
   const {
     shots,
@@ -54,6 +61,8 @@ export default function CameraBooth(_props: CameraBoothProps) {
     videoRef,
     currentFilter,
     playVideo,
+    // We pass the face mesh canvas to capture hook to execute the composite drawing
+    stickerCanvasRef: faceMeshCanvasRef,
   });
 
   const {
@@ -108,6 +117,14 @@ export default function CameraBooth(_props: CameraBoothProps) {
         currentFilter={currentFilter}
         onSelectFilter={setCurrentFilter}
       />
+      
+      {/* Sticker Modal */}
+      <StickerModal
+        isOpen={showStickerModal}
+        onClose={() => setShowStickerModal(false)}
+        currentSticker={currentSticker}
+        onSelectSticker={setCurrentSticker}
+      />
 
       {/* Preview Modal */}
       <PreviewModal
@@ -124,6 +141,7 @@ export default function CameraBooth(_props: CameraBoothProps) {
           <div className="flex gap-0">
             <CameraPreview
               videoRef={videoRef}
+              faceMeshCanvasRef={faceMeshCanvasRef}
               currentFilter={currentFilter}
               countdown={countdown}
               shots={shots}
@@ -134,11 +152,13 @@ export default function CameraBooth(_props: CameraBoothProps) {
 
             <SidePanel
               currentFilter={currentFilter}
+              currentSticker={currentSticker}
               shots={shots}
               showReview={showReview}
               reshootIndex={reshootIndex}
               countdown={countdown}
               onFilterClick={() => setShowFilterModal(true)}
+              onStickerClick={() => setShowStickerModal(true)}
               onStartSequence={startSequence}
               onSnap={snap}
               onRetakeAll={handleRetakeAll}

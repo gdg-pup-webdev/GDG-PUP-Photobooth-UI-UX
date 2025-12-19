@@ -1,12 +1,15 @@
 import { CaptureButton, colors, FILTERS } from "../../ui";
+import { STICKER_FILTERS } from "../utils/faceFilters";
 
 interface SidePanelProps {
   currentFilter: string;
+  currentSticker: string;
   shots: (string | null)[];
   showReview: boolean;
   reshootIndex: number | null;
   countdown: number | null;
   onFilterClick: () => void;
+  onStickerClick: () => void;
   onStartSequence: () => void;
   onSnap: (index: number) => void;
   onRetakeAll: () => void;
@@ -15,15 +18,17 @@ interface SidePanelProps {
 
 /**
  * SidePanel Component
- * Camera body side panel with filter, capture, and gallery buttons
+ * Camera body side panel with filter, sticker, capture, and gallery buttons
  */
 export default function SidePanel({
   currentFilter,
+  currentSticker,
   shots,
   showReview,
   reshootIndex,
   countdown,
   onFilterClick,
+  onStickerClick,
   onStartSequence,
   onSnap,
   onRetakeAll,
@@ -31,10 +36,13 @@ export default function SidePanel({
 }: SidePanelProps) {
   const currentFilterObj =
     FILTERS.find((f) => f.value === currentFilter) || FILTERS[0];
+  
+  const currentStickerObj = 
+    STICKER_FILTERS.find((s) => s.id === currentSticker);
 
   return (
     <div
-      className="w-28 rounded-r-3xl flex flex-col items-center justify-center gap-6 py-8"
+      className="w-28 rounded-r-3xl flex flex-col items-center justify-center gap-2 py-8"
       style={{
         background: "linear-gradient(180deg, #1f1f35 0%, #151525 100%)",
         borderLeft: "1px solid rgba(255, 255, 255, 0.05)",
@@ -47,7 +55,7 @@ export default function SidePanel({
       {/* Filter Button */}
       <button
         onClick={onFilterClick}
-        className="flex flex-col items-center gap-2 p-3 rounded-xl transition-all hover:scale-105 hover:bg-white/5 group"
+        className="flex flex-col items-center gap-3 p-2 rounded-xl transition-all hover:scale-105 hover:bg-white/5 group"
       >
         <div
           className="w-14 h-14 rounded-full overflow-hidden transition-all group-hover:scale-110"
@@ -65,6 +73,29 @@ export default function SidePanel({
         </div>
         <span className="text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">
           Filter
+        </span>
+      </button>
+
+      {/* Sticker Button */}
+      <button
+        onClick={onStickerClick}
+        className="flex flex-col items-center gap-2 p-2 rounded-xl transition-all hover:scale-105 hover:bg-white/5 group"
+      >
+        <div
+          className="w-14 h-14 rounded-full overflow-hidden transition-all group-hover:scale-110 flex items-center justify-center bg-zinc-800"
+          style={{
+            border: `2px solid ${currentSticker !== 'none' ? colors.green : 'rgba(255, 255, 255, 0.2)'}`,
+            boxShadow: currentSticker !== 'none' ? `0 0 20px ${colors.green}30` : 'none',
+          }}
+        >
+          {currentSticker !== 'none' ? (
+             <span className="text-2xl">{currentStickerObj?.emoji}</span>
+          ) : (
+             <span className="text-2xl opacity-50">🙂</span>
+          )}
+        </div>
+        <span className="text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">
+          Sticker
         </span>
       </button>
 
@@ -121,7 +152,7 @@ export default function SidePanel({
 
       {/* Gallery/Shots Button */}
       <button
-        className="flex flex-col items-center gap-2 p-3 rounded-xl transition-all hover:scale-105 hover:bg-white/5 group"
+        className="flex flex-col items-center gap-2 p-2 mt-4 rounded-xl transition-all hover:scale-105 hover:bg-white/5 group"
         onClick={() => {
           if (shots.filter(Boolean).length > 0) {
             onOpenPreview(0);
@@ -141,7 +172,7 @@ export default function SidePanel({
               {shots[shots.filter(Boolean).length - 1] && (
                 <img
                   src={shots[shots.filter(Boolean).length - 1]!}
-                  className="w-full h-full object-cover -scale-x-100"
+                  className="w-full h-full object-cover"
                   alt="Last shot"
                 />
               )}
