@@ -160,7 +160,7 @@ export function getEmailTemplate(recipientEmail: string): string {
                     <p style="margin: 0; font-size: 12px;">
                       <span style="display: inline-block; padding: 4px 10px; margin: 4px; background: ${colors.green}; color: ${colors.white}; border-radius: 20px; font-weight: 600;">#GDGPUP26</span>
                       <span style="display: inline-block; padding: 4px 10px; margin: 4px; background: ${colors.red}; color: ${colors.white}; border-radius: 20px; font-weight: 600;">#BeSuperWithGDG</span>
-                      <span style="display: inline-block; padding: 4px 10px; margin: 4px; background: ${colors.gold}; color: #1a1a1a; border-radius: 20px; font-weight: 600;">GDGDesignJam</span>
+                      <span style="display: inline-block; padding: 4px 10px; margin: 4px; background: ${colors.gold}; color: #1a1a1a; border-radius: 20px; font-weight: 600;">#GDGDesignJam</span>
                     </p>
                   </td>
                 </tr>
