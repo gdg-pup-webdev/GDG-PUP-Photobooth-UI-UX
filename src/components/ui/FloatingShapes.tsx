@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { colors, colorArray } from "./GDGColors";
+import React, { useState, useEffect } from "react";
+import { colors } from "./GDGColors";
 
 // Snowflake SVG component
 const Snowflake = ({ size, color, style }: { size: number; color: string; style: React.CSSProperties }) => (
@@ -49,11 +49,12 @@ const Star = ({ size, color, style }: { size: number; color: string; style: Reac
 );
 
 // Falling Snow Particle component
-const FallingSnowParticle = ({ delay, duration, left, size }: { 
-  delay: number; 
-  duration: number; 
-  left: number; 
+const FallingSnowParticle = ({ delay, duration, left, size, opacity }: {
+  delay: number;
+  duration: number;
+  left: number;
   size: number;
+  opacity: number;
 }) => (
   <div
     className="absolute rounded-full bg-white"
@@ -62,7 +63,7 @@ const FallingSnowParticle = ({ delay, duration, left, size }: {
       height: size,
       left: `${left}%`,
       top: -20,
-      opacity: 0.6 + Math.random() * 0.4,
+      opacity,
       animation: `snowfall ${duration}s linear infinite`,
       animationDelay: `${delay}s`,
       boxShadow: `0 0 ${size * 2}px rgba(255, 255, 255, 0.5)`,
@@ -71,6 +72,72 @@ const FallingSnowParticle = ({ delay, duration, left, size }: {
 );
 
 export default function FloatingShapes() {
+  const [mounted, setMounted] = useState(false);
+
+  // Generate random values only on client-side to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Don't render anything on server to avoid hydration mismatch
+  if (!mounted) {
+    return <div className="absolute inset-0 overflow-hidden pointer-events-none" />;
+  }
+
+  // Generate random values (only runs on client now)
+  const snowParticles = [...Array(30)].map(() => ({
+    delay: Math.random() * 10,
+    duration: 8 + Math.random() * 8,
+    left: Math.random() * 100,
+    size: 2 + Math.random() * 4,
+    opacity: 0.6 + Math.random() * 0.4,
+  }));
+
+  const snowflakes = [...Array(8)].map(() => ({
+    size: Math.random() * 20 + 15,
+    opacity: 0.4 + Math.random() * 0.3,
+    top: Math.random() * 100,
+    left: Math.random() * 100,
+    floatDuration: 4 + Math.random() * 4,
+    twinkleDuration: 2 + Math.random() * 3,
+    delay: Math.random() * 3,
+    rotation: Math.random() * 360,
+  }));
+
+  const ornaments = [...Array(5)].map((_, i) => ({
+    size: Math.random() * 25 + 20,
+    colorIdx: i % 3,
+    opacity: 0.3 + Math.random() * 0.2,
+    top: 10 + Math.random() * 80,
+    left: Math.random() * 100,
+    duration: 5 + Math.random() * 3,
+    delay: Math.random() * 2,
+  }));
+
+  const stars = [...Array(6)].map(() => ({
+    size: Math.random() * 15 + 10,
+    opacity: 0.4 + Math.random() * 0.3,
+    top: Math.random() * 100,
+    left: Math.random() * 100,
+    duration: 2 + Math.random() * 2,
+    delay: Math.random() * 2,
+  }));
+
+  const lights = [...Array(16)].map((_, i) => ({
+    width: Math.random() * 8 + 4,
+    height: Math.random() * 8 + 4,
+    colorIdx: i % 4,
+    opacity: 0.5 + Math.random() * 0.3,
+    top: Math.random() * 100,
+    left: Math.random() * 100,
+    duration: 1.5 + Math.random() * 2,
+    delay: Math.random() * 2,
+    glowSize: 8 + Math.random() * 8,
+  }));
+
+  const ornamentColors = [colors.red, colors.green, colors.gold];
+  const lightColors = [colors.red, colors.green, colors.gold, colors.white];
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* CSS for snowfall animation */}
@@ -87,20 +154,21 @@ export default function FloatingShapes() {
             opacity: 1;
           }
           100% {
-            transform: translateY(100vh) translateX(${Math.random() > 0.5 ? '' : '-'}30px) rotate(360deg);
+            transform: translateY(100vh) translateX(30px) rotate(360deg);
             opacity: 0;
           }
         }
       `}</style>
 
       {/* Falling Snow Particles */}
-      {[...Array(30)].map((_, i) => (
+      {snowParticles.map((particle, i) => (
         <FallingSnowParticle
           key={`falling-snow-${i}`}
-          delay={Math.random() * 10}
-          duration={8 + Math.random() * 8}
-          left={Math.random() * 100}
-          size={2 + Math.random() * 4}
+          delay={particle.delay}
+          duration={particle.duration}
+          left={particle.left}
+          size={particle.size}
+          opacity={particle.opacity}
         />
       ))}
 
@@ -137,78 +205,72 @@ export default function FloatingShapes() {
       />
 
       {/* Floating Snowflakes */}
-      {[...Array(8)].map((_, i) => (
+      {snowflakes.map((flake, i) => (
         <Snowflake
           key={`snow-${i}`}
-          size={Math.random() * 20 + 15}
+          size={flake.size}
           color={colors.white}
           style={{
-            opacity: 0.4 + Math.random() * 0.3,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            animation: `float ${4 + Math.random() * 4}s ease-in-out infinite, twinkle ${2 + Math.random() * 3}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 3}s`,
-            transform: `rotate(${Math.random() * 360}deg)`,
+            opacity: flake.opacity,
+            top: `${flake.top}%`,
+            left: `${flake.left}%`,
+            animation: `float ${flake.floatDuration}s ease-in-out infinite, twinkle ${flake.twinkleDuration}s ease-in-out infinite`,
+            animationDelay: `${flake.delay}s`,
+            transform: `rotate(${flake.rotation}deg)`,
           }}
         />
       ))}
 
       {/* Christmas Ornaments */}
-      {[...Array(5)].map((_, i) => {
-        const ornamentColors = [colors.red, colors.green, colors.gold];
-        return (
-          <Ornament
-            key={`ornament-${i}`}
-            size={Math.random() * 25 + 20}
-            color={ornamentColors[i % ornamentColors.length]}
-            style={{
-              opacity: 0.3 + Math.random() * 0.2,
-              top: `${10 + Math.random() * 80}%`,
-              left: `${Math.random() * 100}%`,
-              animation: `float ${5 + Math.random() * 3}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-            }}
-          />
-        );
-      })}
+      {ornaments.map((ornament, i) => (
+        <Ornament
+          key={`ornament-${i}`}
+          size={ornament.size}
+          color={ornamentColors[ornament.colorIdx]}
+          style={{
+            opacity: ornament.opacity,
+            top: `${ornament.top}%`,
+            left: `${ornament.left}%`,
+            animation: `float ${ornament.duration}s ease-in-out infinite`,
+            animationDelay: `${ornament.delay}s`,
+          }}
+        />
+      ))}
 
       {/* Golden Stars */}
-      {[...Array(6)].map((_, i) => (
+      {stars.map((star, i) => (
         <Star
           key={`star-${i}`}
-          size={Math.random() * 15 + 10}
+          size={star.size}
           color={colors.gold}
           style={{
-            opacity: 0.4 + Math.random() * 0.3,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            animation: `twinkle ${2 + Math.random() * 2}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 2}s`,
+            opacity: star.opacity,
+            top: `${star.top}%`,
+            left: `${star.left}%`,
+            animation: `twinkle ${star.duration}s ease-in-out infinite`,
+            animationDelay: `${star.delay}s`,
           }}
         />
       ))}
 
       {/* Small twinkling dots - like Christmas lights */}
-      {[...Array(16)].map((_, i) => {
-        const lightColors = [colors.red, colors.green, colors.gold, colors.white];
-        return (
-          <div
-            key={`light-${i}`}
-            className="absolute rounded-full"
-            style={{
-              width: Math.random() * 8 + 4 + "px",
-              height: Math.random() * 8 + 4 + "px",
-              background: lightColors[i % 4],
-              opacity: 0.5 + Math.random() * 0.3,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animation: `twinkle ${1.5 + Math.random() * 2}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-              boxShadow: `0 0 ${8 + Math.random() * 8}px ${lightColors[i % 4]}`,
-            }}
-          />
-        );
-      })}
+      {lights.map((light, i) => (
+        <div
+          key={`light-${i}`}
+          className="absolute rounded-full"
+          style={{
+            width: `${light.width}px`,
+            height: `${light.height}px`,
+            background: lightColors[light.colorIdx],
+            opacity: light.opacity,
+            top: `${light.top}%`,
+            left: `${light.left}%`,
+            animation: `twinkle ${light.duration}s ease-in-out infinite`,
+            animationDelay: `${light.delay}s`,
+            boxShadow: `0 0 ${light.glowSize}px ${lightColors[light.colorIdx]}`,
+          }}
+        />
+      ))}
     </div>
   );
 }
