@@ -38,6 +38,10 @@ export default function PreviewModal({
   // Filter out null images
   const validImages = images.filter(Boolean) as string[];
 
+  // Color for current image
+  const shotColors = [colors.green, colors.red, colors.gold];
+  const currentColor = shotColors[currentIndex % 3];
+
   // Reset index when modal opens with new initialIndex
   const handleOpen = () => {
     setCurrentIndex(initialIndex);
@@ -55,9 +59,30 @@ export default function PreviewModal({
     }
   };
 
-  // Color for current image
-  const shotColors = [colors.green, colors.red, colors.gold];
-  const currentColor = shotColors[currentIndex % 3];
+  // Keyboard navigation for accessibility
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case "ArrowLeft":
+          e.preventDefault();
+          setCurrentIndex((prev) => (prev - 1 + validImages.length) % validImages.length);
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          setCurrentIndex((prev) => (prev + 1) % validImages.length);
+          break;
+        case "Escape":
+          e.preventDefault();
+          onClose();
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, validImages.length, onClose]);
 
   return (
     <AnimatePresence onExitComplete={() => setCurrentIndex(initialIndex)}>

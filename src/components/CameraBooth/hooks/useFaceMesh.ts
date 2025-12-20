@@ -14,9 +14,21 @@ import {
   Landmark
 } from '../utils/faceFilters';
 
-// Performance: Frame rate throttling
-const TARGET_FPS = 30;
-const FRAME_INTERVAL = 1000 / TARGET_FPS;
+// ===== PERFORMANCE OPTIMIZATION CONSTANTS =====
+// Dynamic FPS based on face count for smooth performance
+const getFPSForFaceCount = (faceCount: number): number => {
+  if (faceCount >= 4) return 12;  // 4+ faces: lowest FPS
+  if (faceCount >= 3) return 15;  // 3 faces: low FPS
+  if (faceCount >= 2) return 20;  // 2 faces: medium FPS
+  return 30;                       // 1 face: full FPS
+};
+
+// Frame skip configuration for detection vs rendering
+const DETECTION_SKIP_FRAMES = 2; // Only run ML detection every N frames
+const RENDER_EVERY_FRAME = true; // Always render cached results
+
+// Debounce configuration for state updates
+const STATE_UPDATE_DEBOUNCE_MS = 100;
 
 export const useFaceMesh = (
   videoRef: React.RefObject<HTMLVideoElement | null>,
@@ -28,6 +40,13 @@ export const useFaceMesh = (
   const snowflakesRef = useRef<Snowflake[]>([]);
   const handsRef = useRef<any>(null);
   const sparkyImageRef = useRef<HTMLImageElement | null>(null);
+
+  // ===== PERFORMANCE: Cached results for frame reuse =====
+  const cachedResultsRef = useRef<any>(null);
+  const frameCountRef = useRef<number>(0);
+  const currentFPSRef = useRef<number>(30);
+  const lastStateUpdateRef = useRef<number>(0);
+  const faceCountRef = useRef<number>(0);
 
   // Sparky interaction state
   const sparkyStateRef = useRef({
@@ -75,10 +94,12 @@ export const useFaceMesh = (
     }
   }, [currentSticker]);
 
-  // Initialize snowflakes
+  // Initialize snowflakes with reduced count for performance
   useEffect(() => {
     const flakes: Snowflake[] = [];
-    for (let i = 0; i < 50; i++) {
+    // Reduced from 50 to 30 for better performance
+    const flakeCount = 30;
+    for (let i = 0; i < flakeCount; i++) {
       flakes.push({
         x: Math.random(),
         y: Math.random(),
@@ -91,50 +112,30 @@ export const useFaceMesh = (
     snowflakesRef.current = flakes;
   }, []);
 
-  const onResults = useCallback((results: any) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    // Ensure canvas dimensions match the video
-    // MediaPipe results.image can be HTMLVideoElement, ImageBitmap, or other types
-    const image = results.image;
-    if (image) {
-      // Check if it's a video element
-      if ('videoWidth' in image && 'videoHeight' in image) {
-        const videoEl = image as unknown as HTMLVideoElement;
-        if (canvas.width !== videoEl.videoWidth || canvas.height !== videoEl.videoHeight) {
-          canvas.width = videoEl.videoWidth;
-          canvas.height = videoEl.videoHeight;
-        }
-      } else if ('width' in image && 'height' in image) {
-        // ImageBitmap or HTMLImageElement
-        const imgEl = image as { width: number; height: number };
-        if (canvas.width !== imgEl.width || canvas.height !== imgEl.height) {
-          canvas.width = imgEl.width;
-          canvas.height = imgEl.height;
-        }
-      }
-    }
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.save();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+  // ===== OPTIMIZED: Render function using cached results =====
+  const renderCachedResults = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
+    const results = cachedResultsRef.current;
     const filter = stickerRef.current;
+    const faceCount = faceCountRef.current;
+
+    // Performance mode: simplify rendering when many faces
+    const isPerformanceMode = faceCount >= 2;
 
     // Always draw snowflakes if selected (even without face)
     if (filter === "snowflakes") {
       drawSnowflakes(ctx, snowflakesRef.current, canvas.width, canvas.height);
     }
 
-    if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-      setIsFaceDetected(true);
-
+    if (results?.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
       // Loop through ALL detected faces
       results.multiFaceLandmarks.forEach((faceLandmarks: Landmark[]) => {
         const landmarks = faceLandmarks;
+
+        // In performance mode, skip expensive effects
+        if (isPerformanceMode) {
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+        }
 
         switch (filter) {
           case "santa_hat":
@@ -163,12 +164,61 @@ export const useFaceMesh = (
             break;
         }
       });
-    } else {
-      setIsFaceDetected(false);
+    }
+  }, []);
+
+  const onResults = useCallback((results: any) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // ===== PERFORMANCE: Cache results for frame reuse =====
+    cachedResultsRef.current = results;
+
+    // Update face count and dynamic FPS
+    const newFaceCount = results.multiFaceLandmarks?.length || 0;
+    if (newFaceCount !== faceCountRef.current) {
+      faceCountRef.current = newFaceCount;
+      currentFPSRef.current = getFPSForFaceCount(newFaceCount);
+      console.log(`🎯 Faces: ${newFaceCount}, FPS: ${currentFPSRef.current}`);
+    }
+
+    // Ensure canvas dimensions match the video
+    const image = results.image;
+    if (image) {
+      if ('videoWidth' in image && 'videoHeight' in image) {
+        const videoEl = image as unknown as HTMLVideoElement;
+        if (canvas.width !== videoEl.videoWidth || canvas.height !== videoEl.videoHeight) {
+          canvas.width = videoEl.videoWidth;
+          canvas.height = videoEl.videoHeight;
+        }
+      } else if ('width' in image && 'height' in image) {
+        const imgEl = image as { width: number; height: number };
+        if (canvas.width !== imgEl.width || canvas.height !== imgEl.height) {
+          canvas.width = imgEl.width;
+          canvas.height = imgEl.height;
+        }
+      }
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.save();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Render using cached results
+    renderCachedResults(ctx, canvas);
+
+    // ===== PERFORMANCE: Debounced state update =====
+    const now = performance.now();
+    const hasFaces = results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0;
+    if (now - lastStateUpdateRef.current > STATE_UPDATE_DEBOUNCE_MS) {
+      setIsFaceDetected(hasFaces);
+      lastStateUpdateRef.current = now;
     }
 
     ctx.restore();
-  }, []);
+  }, [renderCachedResults]);
 
   // Handle Hand Results (for Sparky)
   const onHandResults = useCallback((results: any) => {
@@ -189,43 +239,34 @@ export const useFaceMesh = (
     // --- Hand Gesture Logic ---
     let newX = sparkyStateRef.current.x;
     let newY = sparkyStateRef.current.y;
-    const newScale = sparkyStateRef.current.scale; // Fixed scale, no longer variable
+    const newScale = sparkyStateRef.current.scale;
     let isGrabbing = sparkyStateRef.current.isGrabbing;
 
     // Initialize default position if not set (center-bottom)
     if (newX === undefined || newY === undefined) {
-      newX = 0.5; // Center horizontally
-      newY = 0.85; // Near bottom (85% down from top)
+      newX = 0.5;
+      newY = 0.85;
     }
 
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
       const hand = results.multiHandLandmarks[0];
-
-      // Detect if hand is open or closed
-      // Hand landmarks: 0=wrist, 4=thumb tip, 8=index tip, 12=middle tip, 16=ring tip, 20=pinky tip
-      // PIP joints: 6=index PIP, 10=middle PIP, 14=ring PIP, 18=pinky PIP
       const isHandOpen = isHandOpenDetection(hand);
 
-      const palmCenter = hand[9]; // Palm center landmark
+      const palmCenter = hand[9];
       const targetX = palmCenter.x;
       const targetY = palmCenter.y;
 
       if (isHandOpen) {
-        // Open hand: Track and update position
-        // Smooth interpolation for natural movement
         newX = newX + (targetX - newX) * 0.2;
         newY = newY + (targetY - newY) * 0.2;
-        isGrabbing = true; // Hand is actively grabbing
+        isGrabbing = true;
       } else {
-        // Closed hand: Lock position (don't update newX, newY)
         isGrabbing = false;
       }
     } else {
-      // No hand detected: Keep Sparky at current position (or default if first time)
       isGrabbing = false;
     }
 
-    // Update Ref
     sparkyStateRef.current = {
       x: newX,
       y: newY,
@@ -233,7 +274,6 @@ export const useFaceMesh = (
       isGrabbing
     };
 
-    // Draw Sparky
     drawSparky(
       ctx,
       sparkyImageRef.current,
@@ -249,15 +289,13 @@ export const useFaceMesh = (
 
   // Helper function to detect if hand is open
   const isHandOpenDetection = (hand: any[]): boolean => {
-    // Check if fingers are extended by comparing fingertip to knuckle distances from palm
-    const palmBase = hand[0]; // Wrist
+    const palmBase = hand[0];
 
-    // For each finger (index, middle, ring, pinky), check if tip is farther from wrist than PIP joint
     const fingers = [
-      { tip: hand[8], pip: hand[6] },   // Index finger
-      { tip: hand[12], pip: hand[10] }, // Middle finger
-      { tip: hand[16], pip: hand[14] }, // Ring finger
-      { tip: hand[20], pip: hand[18] }  // Pinky finger
+      { tip: hand[8], pip: hand[6] },
+      { tip: hand[12], pip: hand[10] },
+      { tip: hand[16], pip: hand[14] },
+      { tip: hand[20], pip: hand[18] }
     ];
 
     let extendedCount = 0;
@@ -265,13 +303,11 @@ export const useFaceMesh = (
       const tipDist = Math.hypot(finger.tip.x - palmBase.x, finger.tip.y - palmBase.y);
       const pipDist = Math.hypot(finger.pip.x - palmBase.x, finger.pip.y - palmBase.y);
 
-      // If tip is farther than PIP, finger is extended
-      if (tipDist > pipDist * 1.1) { // 1.1 threshold for some tolerance
+      if (tipDist > pipDist * 1.1) {
         extendedCount++;
       }
     });
 
-    // Hand is open if at least 3 fingers are extended
     return extendedCount >= 3;
   };
 
@@ -302,7 +338,7 @@ export const useFaceMesh = (
 
               hands.setOptions({
                 maxNumHands: 2,
-                modelComplexity: 1,
+                modelComplexity: 0, // 🔥 PERFORMANCE: Reduced from 1 to 0
                 minDetectionConfidence: 0.5,
                 minTrackingConfidence: 0.5
               });
@@ -312,7 +348,7 @@ export const useFaceMesh = (
               });
 
               handsRef.current = hands;
-              console.log("Hands initialized");
+              console.log("✅ Hands initialized (optimized mode)");
             }
           }
         }
@@ -333,11 +369,12 @@ export const useFaceMesh = (
                 },
               });
 
+              // 🔥 PERFORMANCE: Optimized settings
               faceMesh.setOptions({
                 maxNumFaces: 4,
-                refineLandmarks: true,
-                minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.5,
+                refineLandmarks: false,  // 🔥 DISABLED: Reduces landmarks from 478 to 468
+                minDetectionConfidence: 0.4,  // Slightly lower for speed
+                minTrackingConfidence: 0.4,   // Slightly lower for speed
               });
 
               faceMesh.onResults((results: any) => {
@@ -345,16 +382,17 @@ export const useFaceMesh = (
               });
 
               faceMeshRef.current = faceMesh;
-              console.log("FaceMesh initialized");
+              console.log("✅ FaceMesh initialized (optimized mode - refineLandmarks: false)");
             }
           }
         }
 
-        // Performance: Frame-throttled detection loop
+        // ===== PERFORMANCE: Optimized detection loop with frame skipping =====
         const loop = async () => {
           if (!isMountedRef.current) return;
 
           const now = performance.now();
+          const dynamicFrameInterval = 1000 / currentFPSRef.current;
           const elapsed = now - lastFrameTimeRef.current;
           const video = videoRef.current;
           const canvas = canvasRef.current;
@@ -368,18 +406,15 @@ export const useFaceMesh = (
 
             // Fallback: If Sparky is selected but Hands not ready yet, draw Sparky anyway
             if (stickerRef.current === 'sparky' && !handsRef.current) {
-              // IF NOT initialized, we must draw manually to avoid blank screen.
-              // If initialized, the 'send' below will trigger onResults which clears/draws.
               if (sparkyImageRef.current) {
                 const ctx = canvas.getContext('2d');
                 if (ctx) {
                   ctx.save();
                   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                  // Draw Sparky at default/last known pos
                   let { x, y, scale } = sparkyStateRef.current;
                   if (x === undefined || y === undefined) {
-                    x = 0.5; y = 0.85; // Default center-bottom
+                    x = 0.5; y = 0.85;
                   }
 
                   drawSparky(ctx, sparkyImageRef.current, canvas.width, canvas.height, x, y, scale);
@@ -389,16 +424,33 @@ export const useFaceMesh = (
             }
 
             if (stickerRef.current !== 'none') {
-              if (elapsed >= FRAME_INTERVAL) {
+              frameCountRef.current++;
+
+              // 🔥 PERFORMANCE: Only run ML detection every N frames
+              const shouldRunDetection = frameCountRef.current % DETECTION_SKIP_FRAMES === 0;
+
+              if (elapsed >= dynamicFrameInterval) {
                 lastFrameTimeRef.current = now;
-                try {
-                  // Route to correct detector
-                  if (stickerRef.current === 'sparky' && handsRef.current) {
-                    await handsRef.current.send({ image: video });
-                  } else if (faceMeshRef.current) {
-                    await faceMeshRef.current.send({ image: video });
+
+                if (shouldRunDetection) {
+                  try {
+                    // Route to correct detector
+                    if (stickerRef.current === 'sparky' && handsRef.current) {
+                      await handsRef.current.send({ image: video });
+                    } else if (faceMeshRef.current) {
+                      await faceMeshRef.current.send({ image: video });
+                    }
+                  } catch (err) { }
+                } else if (RENDER_EVERY_FRAME && cachedResultsRef.current) {
+                  // 🔥 PERFORMANCE: Render cached results on skipped frames
+                  const ctx = canvas.getContext('2d');
+                  if (ctx) {
+                    ctx.save();
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    renderCachedResults(ctx, canvas);
+                    ctx.restore();
                   }
-                } catch (err) { }
+                }
               }
             }
           }
@@ -417,7 +469,7 @@ export const useFaceMesh = (
 
     return () => {
     };
-  }, [videoRef, onResults, onHandResults, currentSticker]); // Added currentSticker to deps
+  }, [videoRef, onResults, onHandResults, currentSticker, renderCachedResults]);
 
   // Cleanup on unmount only
   useEffect(() => {
