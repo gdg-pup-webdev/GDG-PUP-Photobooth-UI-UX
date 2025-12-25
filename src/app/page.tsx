@@ -5,7 +5,16 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, useInView, AnimatePresence, type Easing } from "framer-motion";
 import { useRef } from "react";
-import { Camera, Sparkles, Download, Share2, Clock, Users, Zap, Heart } from "lucide-react";
+import {
+  Camera,
+  Sparkles,
+  Download,
+  Share2,
+  Clock,
+  Users,
+  Zap,
+  Heart,
+} from "lucide-react";
 import { FloatingShapes, GDGFooter, HeartBurst } from "@/components/ui";
 
 // GDG Brand Colors (local to landing page - separate from Christmas theme)
@@ -17,7 +26,6 @@ const colors = {
 };
 
 const colorArray = Object.values(colors);
-
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -99,18 +107,24 @@ const twinkleAnimation = (delay: number) => ({
 
 export default function Home() {
   const [currentStat, setCurrentStat] = useState(0);
-  
+
   // Refs for scroll-triggered animations
   const heroRef = useRef(null);
   const howItWorksRef = useRef(null);
   const galleryRef = useRef(null);
   const funFactsRef = useRef(null);
   const ctaRef = useRef(null);
-  
+
   const heroInView = useInView(heroRef, { once: true, margin: "-100px" });
-  const howItWorksInView = useInView(howItWorksRef, { once: true, margin: "-100px" });
+  const howItWorksInView = useInView(howItWorksRef, {
+    once: true,
+    margin: "-100px",
+  });
   const galleryInView = useInView(galleryRef, { once: true, margin: "-100px" });
-  const funFactsInView = useInView(funFactsRef, { once: true, margin: "-100px" });
+  const funFactsInView = useInView(funFactsRef, {
+    once: true,
+    margin: "-100px",
+  });
   const ctaInView = useInView(ctaRef, { once: true, margin: "-100px" });
 
   useEffect(() => {
@@ -123,7 +137,12 @@ export default function Home() {
   const stats = [
     { number: "150+", label: "Photos Taken", icon: Camera, color: colors.blue },
     { number: "∞", label: "Happy Sparkmates", icon: Users, color: colors.red },
-    { number: "3", label: "Shots Per Strip", icon: Sparkles, color: colors.yellow },
+    {
+      number: "3",
+      label: "Shots Per Strip",
+      icon: Sparkles,
+      color: colors.yellow,
+    },
     { number: "∞", label: "Memories Made", icon: Heart, color: colors.green },
   ];
 
@@ -131,28 +150,32 @@ export default function Home() {
     {
       step: 1,
       title: "Strike a Pose",
-      description: "Get ready for 3 awesome shots! The camera will countdown before each snap.",
+      description:
+        "Get ready for 3 awesome shots! The camera will countdown before each snap.",
       icon: Camera,
       color: colors.blue,
     },
     {
       step: 2,
       title: "Choose Your Filter",
-      description: "Pick from fun filters like B&W, Vintage, Vivid, and more to style your photos.",
+      description:
+        "Pick from fun filters like B&W, Vintage, Vivid, and more to style your photos.",
       icon: Sparkles,
       color: colors.red,
     },
     {
       step: 3,
       title: "Review & Retake",
-      description: "Not happy with a shot? No worries! Retake any photo until it's perfect.",
+      description:
+        "Not happy with a shot? No worries! Retake any photo until it's perfect.",
       icon: Zap,
       color: colors.yellow,
     },
     {
       step: 4,
       title: "Download & Share",
-      description: "Get your beautiful photo strip instantly. Share it or keep it as a memory!",
+      description:
+        "Get your beautiful photo strip instantly. Share it or keep it as a memory!",
       icon: Download,
       color: colors.green,
     },
@@ -168,15 +191,20 @@ export default function Home() {
       {/* Keep gradient shift for text - CSS animation */}
       <style jsx global>{`
         @keyframes gradientShift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
+          0%,
+          100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
         }
       `}</style>
 
       <FloatingShapes />
 
       {/* Navigation */}
-      <motion.nav 
+      <motion.nav
         className="relative z-20 flex items-center justify-between px-6 md:px-12 py-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -193,12 +221,11 @@ export default function Home() {
               />
             ))}
           </div>
-          <span className="text-white font-bold text-lg hidden sm:block">GDG PUP Photo Booth</span>
+          <span className="text-white font-bold text-lg hidden sm:block">
+            GDG PUP Photo Booth
+          </span>
         </div>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Link
             href="/photobooth"
             className="px-6 py-2.5 rounded-full font-bold text-sm"
@@ -213,7 +240,10 @@ export default function Home() {
       </motion.nav>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative z-10 px-6 md:px-12 py-12 md:py-20">
+      <section
+        ref={heroRef}
+        className="relative z-10 px-6 md:px-12 py-12 md:py-20"
+      >
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-30 lg:gap-12 items-center">
           {/* Left Content */}
           <motion.div
@@ -223,7 +253,7 @@ export default function Home() {
             variants={staggerContainer}
           >
             <motion.div variants={staggerItem}>
-              <motion.div 
+              <motion.div
                 className="flex items-center gap-2 mb-4"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={heroInView ? { opacity: 1, scale: 1 } : {}}
@@ -255,20 +285,17 @@ export default function Home() {
                 <br />
                 PhotoBooth
               </motion.h1>
-              <motion.p 
+              <motion.p
                 className="text-zinc-400 text-lg md:text-xl mt-6 max-w-md leading-relaxed"
                 variants={fadeInUp}
               >
-                Capture your favorite moments at GDG events! Take fun photos, apply cool filters, 
-                and download your photo strip instantly.
+                Capture your favorite moments at GDG events! Take fun photos,
+                apply cool filters, and download your photo strip instantly.
               </motion.p>
             </motion.div>
 
             {/* CTA Buttons */}
-            <motion.div 
-              className="flex flex-wrap gap-4"
-              variants={staggerItem}
-            >
+            <motion.div className="flex flex-wrap gap-4" variants={staggerItem}>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -300,16 +327,22 @@ export default function Home() {
                   background: "rgba(255,255,255,0.05)",
                   border: "1px solid rgba(255,255,255,0.1)",
                 }}
-                whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                whileHover={{
+                  scale: 1.05,
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Sparkles className="w-5 h-5" style={{ color: colors.yellow }} />
+                <Sparkles
+                  className="w-5 h-5"
+                  style={{ color: colors.yellow }}
+                />
                 How it Works
               </motion.a>
             </motion.div>
 
             {/* Stats Bar */}
-            <motion.div 
+            <motion.div
               className="flex flex-wrap gap-6 pt-6 border-t border-zinc-800"
               variants={staggerItem}
             >
@@ -330,11 +363,18 @@ export default function Home() {
                         border: `1px solid ${stat.color}40`,
                       }}
                     >
-                      <stat.icon className="w-5 h-5" style={{ color: stat.color }} />
+                      <stat.icon
+                        className="w-5 h-5"
+                        style={{ color: stat.color }}
+                      />
                     </div>
                     <div>
-                      <div className="text-2xl font-black text-white">{stat.number}</div>
-                      <div className="text-xs text-zinc-500 uppercase tracking-wider">{stat.label}</div>
+                      <div className="text-2xl font-black text-white">
+                        {stat.number}
+                      </div>
+                      <div className="text-xs text-zinc-500 uppercase tracking-wider">
+                        {stat.label}
+                      </div>
                     </div>
                   </motion.div>
                 </AnimatePresence>
@@ -344,7 +384,7 @@ export default function Home() {
 
           {/* Right Content - Diagonal Photo Strips */}
           <motion.div
-            className="relative h-[500px] md:h-[600px]"
+            className="relative h-125 md:h-150" // Equivalent to 500px, 600px respectively
             initial="hidden"
             animate={heroInView ? "visible" : "hidden"}
             variants={fadeInRight}
@@ -397,7 +437,9 @@ export default function Home() {
                       />
                     ))}
                   </div>
-                  <p className="text-xs text-gray-600 font-medium">GDG on Campus PUP</p>
+                  <p className="text-xs text-gray-600 font-medium">
+                    GDG on Campus PUP
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -449,7 +491,9 @@ export default function Home() {
                       />
                     ))}
                   </div>
-                  <p className="text-xs text-gray-600 font-medium">GDG on Campus PUP</p>
+                  <p className="text-xs text-gray-600 font-medium">
+                    GDG on Campus PUP
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -459,22 +503,35 @@ export default function Home() {
               className="absolute top-20 left-10 w-20 h-20 rounded-full blur-3xl"
               style={{ background: colors.blue, opacity: 0.3 }}
               animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" as Easing }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut" as Easing,
+              }}
             />
             <motion.div
               className="absolute bottom-40 right-10 w-24 h-24 rounded-full blur-3xl"
               style={{ background: colors.yellow, opacity: 0.3 }}
               animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" as Easing, delay: 1 }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: "easeInOut" as Easing,
+                delay: 1,
+              }}
             />
           </motion.div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section ref={howItWorksRef} id="how-it-works" className="relative z-10 px-6 md:px-12 py-20">
+      <section
+        ref={howItWorksRef}
+        id="how-it-works"
+        className="relative z-10 px-6 md:px-12 py-20"
+      >
         <div className="max-w-6xl mx-auto">
-          <motion.div 
+          <motion.div
             className="text-center mb-16"
             initial="hidden"
             animate={howItWorksInView ? "visible" : "hidden"}
@@ -492,11 +549,12 @@ export default function Home() {
               How It Works
             </h2>
             <p className="text-zinc-400 text-lg max-w-md mx-auto">
-              It's super easy! Just follow these simple steps to get your photo strip.
+              It's super easy! Just follow these simple steps to get your photo
+              strip.
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
             initial="hidden"
             animate={howItWorksInView ? "visible" : "hidden"}
@@ -536,27 +594,37 @@ export default function Home() {
                   }}
                   whileHover={{ scale: 1.1, rotate: -5 }}
                 >
-                  <step.icon className="w-8 h-8" style={{ color: step.color }} />
+                  <step.icon
+                    className="w-8 h-8"
+                    style={{ color: step.color }}
+                  />
                 </motion.div>
 
-                <h3 className="text-xl font-bold text-white mb-2">{step.title}</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">{step.description}</p>
+                <h3 className="text-xl font-bold text-white mb-2">
+                  {step.title}
+                </h3>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  {step.description}
+                </p>
 
                 {/* Connecting line for desktop */}
                 {i < steps.length - 1 && (
-                  <div 
-                    className="hidden lg:flex items-center absolute top-1/2 -translate-y-1/2 z-10" 
-                    style={{ 
-                      left: '100%',
-                      width: '1.5rem',
-                      paddingLeft: '2px',
-                      paddingRight: '2px',
+                  <div
+                    className="hidden lg:flex items-center absolute top-1/2 -translate-y-1/2 z-10"
+                    style={{
+                      left: "100%",
+                      width: "1.5rem",
+                      paddingLeft: "2px",
+                      paddingRight: "2px",
                     }}
                   >
-                    <div className="flex-1 h-[2px] bg-gradient-to-r from-zinc-600 to-zinc-500" />
-                    <div 
-                      className="w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[8px] ml-0"
-                      style={{ borderLeftColor: steps[i + 1]?.color || colors.green }}
+                    <div className="flex-1 h-0.5 bg-linear-to-r from-zinc-600 to-zinc-500" />{" "}
+                    //* Fixed some warnings in the tailwind css
+                    <div
+                      className="w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-8 ml-0"
+                      style={{
+                        borderLeftColor: steps[i + 1]?.color || colors.green,
+                      }}
                     />
                   </div>
                 )}
@@ -569,7 +637,7 @@ export default function Home() {
       {/* Photo Gallery Section */}
       <section ref={galleryRef} className="relative z-10 px-6 md:px-12 py-20">
         <div className="max-w-6xl mx-auto">
-          <motion.div 
+          <motion.div
             className="text-center mb-16"
             initial="hidden"
             animate={galleryInView ? "visible" : "hidden"}
@@ -587,12 +655,13 @@ export default function Home() {
               Photo Gallery
             </h2>
             <p className="text-zinc-400 text-lg max-w-md mx-auto">
-              Check out some amazing moments captured at our previous GDG events!
+              Check out some amazing moments captured at our previous GDG
+              events!
             </p>
           </motion.div>
 
           {/* Gallery Grid */}
-          <motion.div 
+          <motion.div
             className="grid grid-cols-2 md:grid-cols-4 gap-4"
             initial="hidden"
             animate={galleryInView ? "visible" : "hidden"}
@@ -618,10 +687,12 @@ export default function Home() {
                   initial={{ opacity: 0 }}
                   whileHover={{ opacity: 1 }}
                   style={{
-                    background: `linear-gradient(135deg, ${colorArray[i % 4]}80, transparent)`,
+                    background: `linear-gradient(135deg, ${
+                      colorArray[i % 4]
+                    }80, transparent)`,
                   }}
                 >
-                  <HeartBurst 
+                  <HeartBurst
                     iconClassName="w-8 h-8 text-white drop-shadow-lg"
                     burstCount={6}
                   />
@@ -661,13 +732,22 @@ export default function Home() {
               className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-20"
               style={{ background: colors.blue }}
               animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" as Easing }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut" as Easing,
+              }}
             />
             <motion.div
               className="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl opacity-20"
               style={{ background: colors.green }}
               animate={{ scale: [1, 1.3, 1] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" as Easing, delay: 2 }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut" as Easing,
+                delay: 2,
+              }}
             />
 
             <div className="relative z-10 text-center">
@@ -681,13 +761,19 @@ export default function Home() {
                 animate={funFactsInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.2 }}
               >
-                <Sparkles className="w-4 h-4" style={{ color: colors.yellow }} />
-                <span className="text-sm font-bold" style={{ color: colors.yellow }}>
+                <Sparkles
+                  className="w-4 h-4"
+                  style={{ color: colors.yellow }}
+                />
+                <span
+                  className="text-sm font-bold"
+                  style={{ color: colors.yellow }}
+                >
                   Fun Fact
                 </span>
               </motion.div>
 
-              <motion.h3 
+              <motion.h3
                 className="text-3xl md:text-5xl font-black text-white mb-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={funFactsInView ? { opacity: 1, y: 0 } : {}}
@@ -704,16 +790,17 @@ export default function Home() {
                 </span>{" "}
                 Photos Taken
               </motion.h3>
-              <motion.p 
+              <motion.p
                 className="text-zinc-400 text-lg mb-8 max-w-md mx-auto"
                 initial={{ opacity: 0, y: 20 }}
                 animate={funFactsInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.4 }}
               >
-                During our last GDG event! Be part of the next batch of amazing memories.
+                During our last GDG event! Be part of the next batch of amazing
+                memories.
               </motion.p>
 
-              <motion.div 
+              <motion.div
                 className="flex flex-wrap justify-center gap-4"
                 initial="hidden"
                 animate={funFactsInView ? "visible" : "hidden"}
@@ -722,7 +809,11 @@ export default function Home() {
                 {[
                   { icon: Clock, text: "Instant Download", color: colors.blue },
                   { icon: Share2, text: "Easy to Share", color: colors.red },
-                  { icon: Sparkles, text: "6 Fun Filters", color: colors.yellow },
+                  {
+                    icon: Sparkles,
+                    text: "6 Fun Filters",
+                    color: colors.yellow,
+                  },
                 ].map((item, i) => (
                   <motion.div
                     key={i}
@@ -732,9 +823,15 @@ export default function Home() {
                       border: "1px solid rgba(255,255,255,0.1)",
                     }}
                     variants={staggerItem}
-                    whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                    whileHover={{
+                      scale: 1.05,
+                      backgroundColor: "rgba(255,255,255,0.1)",
+                    }}
                   >
-                    <item.icon className="w-5 h-5" style={{ color: item.color }} />
+                    <item.icon
+                      className="w-5 h-5"
+                      style={{ color: item.color }}
+                    />
                     <span className="text-zinc-300">{item.text}</span>
                   </motion.div>
                 ))}
@@ -746,7 +843,7 @@ export default function Home() {
 
       {/* Final CTA Section */}
       <section ref={ctaRef} className="relative z-10 px-6 md:px-12 py-20">
-        <motion.div 
+        <motion.div
           className="max-w-4xl mx-auto text-center"
           initial="hidden"
           animate={ctaInView ? "visible" : "hidden"}
@@ -765,21 +862,16 @@ export default function Home() {
           >
             Ready to Strike a Pose?
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-zinc-400 text-xl mb-10 max-w-lg mx-auto"
             variants={fadeInUp}
           >
-            Jump into the booth and create your perfect photo strip. It only takes a minute!
+            Jump into the booth and create your perfect photo strip. It only
+            takes a minute!
           </motion.p>
 
-          <motion.div
-            variants={fadeInUp}
-            animate={pulseAnimation}
-          >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+          <motion.div variants={fadeInUp} animate={pulseAnimation}>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/photobooth"
                 className="group inline-flex items-center gap-4 px-12 py-5 rounded-2xl font-bold text-xl"
@@ -795,7 +887,7 @@ export default function Home() {
                   <Camera className="w-7 h-7" />
                 </motion.div>
                 <span className="hidden md:block">Start Photo Booth</span>
-                <motion.span 
+                <motion.span
                   className="text-2xl"
                   animate={{ x: [0, 5, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
@@ -807,7 +899,7 @@ export default function Home() {
           </motion.div>
 
           {/* Decorative dots */}
-          <motion.div 
+          <motion.div
             className="flex justify-center gap-2 mt-10"
             variants={staggerContainer}
           >
@@ -825,7 +917,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <motion.footer 
+      <motion.footer
         className="relative z-10 px-6 md:px-12 py-8 border-t border-zinc-800"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
