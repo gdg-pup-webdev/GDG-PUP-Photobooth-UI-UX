@@ -2,7 +2,26 @@
 
 Next.js photobooth for **Santa Doesn't Know U Like I Do: A Design Jam** - Christmas-themed filters, face mesh stickers, and photo strips.
 
-## Getting Started
+## Table of Contents
+
+- [About](#about)
+- [Features](#features)
+- [Quick start](#quick-start)
+- [Documentation](#documentation)
+- [Contributors](#contributors)
+
+## About
+
+Christmas-themed photobooth for the Santa Doesn't Know U Like I Do Design Jam. Guests capture photos with seasonal filters, face mesh stickers, and downloadable strips.
+
+## Features
+
+- Camera capture in the browser
+- Christmas-themed filters
+- Face mesh stickers
+- Downloadable photo strips
+
+## Quick start
 
 ```bash
 npm install
@@ -11,14 +30,14 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
----
-
 ## Documentation
 
-- [docs/state.md](docs/state.md) - Operating position / handover
-- [docs/index.md](docs/index.md) - Doc inventory
-- [FLAGS.md](FLAGS.md) - Improvement register
-- [AGENTS.md](AGENTS.md) - Agent load order
+| Doc | Purpose |
+|-----|---------|
+| [State](docs/state.md) | Operating position / handover |
+| [Index](docs/index.md) | Doc inventory |
+| [FLAGS](FLAGS.md) | Improvement register |
+| [AGENTS](AGENTS.md) | Agent load order |
 
 ## Contributors
 
